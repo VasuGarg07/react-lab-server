@@ -1,0 +1,4 @@
+"Service","Name","Username","Password","Hostname","Port","Security"
+"SMTP","Chandler Schneider","chandler46@ethereal.email","UdaMMzW1z3EC5v9M5Q","smtp.ethereal.email",587,"STARTTLS"
+"IMAP","Chandler Schneider","chandler46@ethereal.email","UdaMMzW1z3EC5v9M5Q","imap.ethereal.email",993,"TLS"
+"POP3","Chandler Schneider","chandler46@ethereal.email","UdaMMzW1z3EC5v9M5Q","pop3.ethereal.email",995,"TLS"
