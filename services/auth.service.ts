@@ -1,9 +1,10 @@
 import { ILoginRequest, ILoginResponse, ISignupRequest, ISignupResponse } from "../interfaces/user.interface";
 import { AlreadyVerified, EmailVerified, InvalidLink, TokenExpired, UserNotExist, UserNotVerified, VerificationEmailAlreadySent } from "../messages/user.messages";
 import { User } from "../models/user.model";
-import { TokenVerifictionError } from "../utils/constants";
+import { TokenVerifictionError } from "../utils/utilities";
 import { TokenVerifictionErrorCodes } from "../utils/enums";
-import { EncryptionUtils, JwtUtils, TokenValidity } from "../utils/utilities";
+import { EncryptionUtils, JwtUtils } from "../utils/utilities";
+import { JwtAccessTokenExpiry, JwtRefreshTokenExpiry, VerificationTokenValidity } from "../utils/constants";
 
 export async function signupUser(userData: ISignupRequest): Promise<ISignupResponse> {
 
@@ -14,7 +15,7 @@ export async function signupUser(userData: ISignupRequest): Promise<ISignupRespo
         email: userData.email.toLowerCase(),
         password: EncryptionUtils.encryptData(userData.password),
         isEmailVerified: false,
-        verificationToken: new Date().valueOf() + TokenValidity
+        verificationToken: new Date().valueOf() + VerificationTokenValidity
     });
     await newUser.save();
 
@@ -59,7 +60,7 @@ export const resendVerificationToken = async (token: string) => {
     if (decryptedData.verificationToken > currentTime) throw new TokenVerifictionError(VerificationEmailAlreadySent, TokenVerifictionErrorCodes.AnotherTokenSent);
 
     user = await User.findById(user._id,
-        { token: currentTime + TokenValidity },
+        { token: currentTime + VerificationTokenValidity },
         { returnDocument: "after" }
     );
 
@@ -80,11 +81,18 @@ export const getUser = async (userData: ILoginRequest) => {
     if (!user.isEmailVerified) throw UserNotVerified;
 
     const response: ILoginResponse = {
-        accessToken: JwtUtils.generateJwtToken(user._id, '2h'),
-        refreshToken: JwtUtils.generateJwtToken(user._id, '1d'),
+        accessToken: JwtUtils.generateJwtToken(user._id, JwtAccessTokenExpiry),
+        refreshToken: JwtUtils.generateJwtToken(user._id, JwtRefreshTokenExpiry),
         username: user.username,
         avatar: user.avatar
     }
 
     return response;
 };
+
+export const refreshAccessToken = (token: string) => {
+    const decoded = JwtUtils.decodeJwt(token);
+    return {
+        accessToken: JwtUtils.generateJwtToken(decoded.userId, JwtAccessTokenExpiry)
+    }
+}

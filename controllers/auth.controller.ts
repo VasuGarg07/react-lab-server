@@ -1,8 +1,8 @@
 import { ILoginResponse } from "../interfaces/user.interface";
 import { VerificationEmailSent } from "../messages/user.messages";
-import { getUser, resendVerificationToken, signupUser, verifyEmail } from "../services/auth.service";
+import { getUser, refreshAccessToken, resendVerificationToken, signupUser, verifyEmail } from "../services/auth.service";
 import { sendEmail } from "../services/transporter.service";
-import { TokenVerifictionError } from "../utils/constants";
+import { TokenVerifictionError } from "../utils/utilities";
 import { verifyEmailBody, verifyEmailSubject } from "../utils/email-templates";
 import { Request, Response } from "express";
 
@@ -44,6 +44,16 @@ export const loginUser = async (req: Request, res: Response) => {
 
     try {
         const response: ILoginResponse = await getUser(req.body);
+        res.status(200).json(response);
+    } catch (error) {
+        res.status(400).json({ error });
+    }
+}
+
+export const refreshToken = async (req: Request, res: Response) => {
+    const token = req.headers["authorization"]!.split(" ")[1];
+    try {
+        const response = refreshAccessToken(token);
         res.status(200).json(response);
     } catch (error) {
         res.status(400).json({ error });

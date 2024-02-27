@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { ValidationError } from "yup";
-import { JWT_SECRET } from "../configuration/app.config";
 import { loginValidation } from "../models/user.model";
+import { JwtUtils } from "../utils/utilities";
 
 export const verifySignupRequest = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -33,7 +33,7 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
     return res.status(403).send("Token required for authentication");
   }
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = JwtUtils.verifyJwtToken(token);
     console.log("Decoded Value: ", decoded);
     return next();
   } catch (err) {

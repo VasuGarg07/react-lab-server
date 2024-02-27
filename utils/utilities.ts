@@ -3,7 +3,6 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Types } from 'mongoose';
 import { AES_KEY, JWT_SECRET } from '../configuration/app.config';
 
-export const TokenValidity = 2 * 60 * 60 * 1000;
 
 // JWT Utils
 export namespace JwtUtils {
@@ -43,4 +42,13 @@ export namespace EncryptionUtils {
         const decipher = createDecipheriv(encryptionType, AES_KEY, encryptionIV);
         return decipher.update(buff.toString("utf8"), "hex", "utf8") + decipher.final("utf8");
     };
+}
+
+
+export class TokenVerifictionError extends Error {
+    errorCode: number;
+    constructor(message: string, errorCode: number) {
+        super(message);
+        this.errorCode = errorCode;
+    }
 }

@@ -1,10 +1,3 @@
-export const AccessTokenValidity = 2 * 60 * 60 * 1000;
-export const RefreshTokenValidity = 24 * 60 * 60 * 1000;
-
-export class TokenVerifictionError extends Error {
-    errorCode: number;
-    constructor(message: string, errorCode: number) {
-        super(message);
-        this.errorCode = errorCode;
-    }
-}
+export const VerificationTokenValidity = 2 * 60 * 60 * 1000;
+export const JwtAccessTokenExpiry = '2m';
+export const JwtRefreshTokenExpiry = '1d';
